@@ -32,7 +32,7 @@ default_args = {
 dag = DAG(dag_id="simple_etl_dag", default_args=default_args, schedule_interval=None)
 
 #create connection
-engine = create_engine("postgresql+psycopg2://postgres:1234@localhost:5432/postgres")
+engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost:5432/postgres")
 engine.connect()
 
 #define source data path
