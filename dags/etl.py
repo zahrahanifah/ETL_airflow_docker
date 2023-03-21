@@ -46,17 +46,11 @@ path_precipitation = 'E:/Zahra - Data Bootcamp/final-project 3/data/temperature/
 
 #define staging task
 load_stg_tip = load_to_staging(path_tip,'stg_tip',engine=engine).load_staging_tip()
-
 load_stg_checkin = load_to_staging(path_checkin,'stg_checkin',engine=engine).load_staging_tip()
-
 load_stg_review= load_to_staging(path_review,'stg_review',engine=engine).load_staging_review()
-
 load_stg_business = load_to_staging(path_business,'stg_business',engine=engine).load_staging_business()
-
 load_stg_user = load_to_staging(path_user,'stg_user',engine=engine).load_staging_user()
-
 load_stg_precipitation= load_to_staging(path_precipitation,'stg_precipitation',engine=engine).load_staging_precipitacion()
-
 load_stg_temperature= load_to_staging(path_temperature,'stg_temperature',engine=engine).load_staging_temperature()
 
 #define fact task
