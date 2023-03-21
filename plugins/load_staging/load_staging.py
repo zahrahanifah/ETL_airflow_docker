@@ -31,12 +31,12 @@ class load_to_staging:
     
     def load_staging_business(self):
       data = read_json_file(self.path)
-      data = data.read_json_tip()
+      data = data.read_json_business()
       data.to_sql(self.table_name, self.engine, if_exists='replace')
 
     def load_staging_user(self):
       data = read_json_file(self.path)
-      data = data.read_json_tip()
+      data = data.read_json_user()
       data.to_sql(self.table_name, self.engine, if_exists='replace')
       
 

@@ -71,19 +71,19 @@ load_fact_tip = load_to_fact(sql_statements.create_table_fact_tip,
 #define dim task
 load_dim_business = load_to_dim(sql_statements.create_table_dim_business, 
                                 sql_statements.dim_business_insert, 
-                                engine).load_dim_business()
+                                engine).load_to_dim()
 
 load_dim_user = load_to_dim(sql_statements.create_table_dim_user, 
                                 sql_statements.dim_user_insert, 
-                                engine).load_dim_user()
+                                engine).load_to_dim()
 
 
 #define serving task
-load_srv_review = load_to_fact(sql_statements.create_table_srv_review, 
+load_srv_review = load_to_serving(sql_statements.create_table_srv_review, 
                                 sql_statements.srv_review_insert, 
                                 engine).load_to_serving()
 
-load_srv_tip = load_to_fact(sql_statements.create_table_srv_tip, 
+load_srv_tip = load_to_serving(sql_statements.create_table_srv_tip, 
                                 sql_statements.srv_tip_insert, 
                                 engine).load_to_serving()
 

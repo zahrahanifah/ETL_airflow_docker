@@ -50,22 +50,22 @@ create_table_dim_business = '''
 CREATE TABLE IF NOT EXISTS dim_business (
     business_id varchar(256), 
     name varchar(256), 
-    address varchar(256), 
+    address varchar(1000), 
     city varchar(256), 
     state varchar(256), 
     postal_code varchar(256), 
     latitude varchar(256), 
     longitude varchar(256), 
-    starts int5,
-    review_count int7,
-    is_open int4,
-    attributes varchar(256),
-    categories varchar(256),
-    hours varchar(256))
+    stars int,
+    review_count int,
+    is_open int,
+    attributes varchar(1000),
+    categories varchar(1000),
+    hours varchar(1000))
 '''
 
 dim_business_insert = '''
-        INSERT INTO dim_business (business_id, name, address, city, state, postal_code, latitude, longitude, starts,review_count,is_open,attributes,categories ,hours)
+        INSERT INTO dim_business (business_id, name, address, city, state, postal_code, latitude, longitude, stars,review_count,is_open,attributes,categories,hours)
         SELECT business_id, 
                name, 
                address, 
@@ -74,16 +74,16 @@ dim_business_insert = '''
                postal_code, 
                latitude, 
                longitude, 
-               starts,
+               stars,
                review_count,
                is_open,
                attributes,
-               categories ,
+               categories,
                hours
                FROM stg_business
     '''
 
-create_table_user_business = '''
+create_table_dim_user = '''
 CREATE TABLE IF NOT EXISTS dim_user (
     user_id varchar(256), 
     name varchar(256), 
@@ -92,8 +92,8 @@ CREATE TABLE IF NOT EXISTS dim_user (
     useful int, 
     funny int, 
     cool int, 
-    elite varchar(256), 
-    friends varchar(5000))
+    elite varchar(1000), 
+    friends varchar)
 '''
 
 dim_user_insert = '''
@@ -101,7 +101,7 @@ dim_user_insert = '''
         SELECT user_id, 
                name, 
                review_count, 
-               yelping_since, 
+               yelping_since::date, 
                useful, 
                funny, 
                cool, 
@@ -114,7 +114,7 @@ dim_user_insert = '''
 #Below are serving table
 
 create_table_srv_review = '''
-CREATE TABLE IF NOT EXISTS fact_review (
+CREATE TABLE IF NOT EXISTS srv_review  (
     review_id varchar(256), 
     user_id varchar(256), 
     business_id varchar(256), 
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS fact_review (
 '''
 
 srv_review_insert = '''
-        INSERT INTO fact_review (date,review_id,user_id,business_id,stars, useful, funny, cool, text, min, max, normal_min, normal_max)
+        INSERT INTO srv_review  (date,review_id,user_id,business_id,stars, useful, funny, cool, text, min, max, normal_min, normal_max)
         SELECT stg_review.date::date,
                review_id,
                user_id,
@@ -156,7 +156,7 @@ srv_review_insert = '''
     '''
 
 create_table_srv_tip = '''
-CREATE TABLE IF NOT EXISTS fact_tip (
+CREATE TABLE IF NOT EXISTS srv_tip (
     user_id varchar(256), 
     business_id varchar(256), 
     text varchar(5000), 
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS fact_tip (
 '''
 
 srv_tip_insert = '''
-        INSERT INTO fact_tip (date, user_id, business_id, text, compliment_count, min, max, normal_min, normal_max)
+        INSERT INTO srv_tip (date, user_id, business_id, text, compliment_count, min, max, normal_min, normal_max)
         SELECT stg_tip.date::date,
                user_id,
                business_id,

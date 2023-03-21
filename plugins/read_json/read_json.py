@@ -29,14 +29,19 @@ class read_json_file:
         for line in f:
           data.append(json.loads(f.readline()))
         data = pd.DataFrame(data)
+        data['attributes']=str(data['attributes'])
+        data['hours']=str(data['hours'])
       return data
     
     def read_json_user(self):
       data =[]
       with open(self.path,"r",encoding='utf-8') as f:
         for line in f:
-          data.append(json.loads(f.readline()))
-        data = pd.DataFrame(data)
+          try:
+            data.append(json.loads(f.readline()))
+          except Exception as e:
+            pass
+      data = pd.DataFrame(data)
       return data
     
     
