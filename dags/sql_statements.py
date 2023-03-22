@@ -127,11 +127,13 @@ CREATE TABLE IF NOT EXISTS srv_review  (
     min int4, 
     max int4, 
     normal_min int4, 
-    normal_max int4)
+    normal_max int4,
+    precipitation float8,
+    precipitation_normal float8)
 '''
 
 srv_review_insert = '''
-        INSERT INTO srv_review  (date,review_id,user_id,business_id,stars, useful, funny, cool, text, min, max, normal_min, normal_max)
+        INSERT INTO srv_review  (date,review_id,user_id,business_id,stars, useful, funny, cool, text, min, max, normal_min, normal_max,precipitation,precipitation_normal)
         SELECT stg_review.date::date,
                review_id,
                user_id,
@@ -144,7 +146,9 @@ srv_review_insert = '''
                min,
                max,
                normal_min,
-               normal_max
+               normal_max,
+               precipitation,
+               precipitation_normal
             FROM stg_review 
             LEFT JOIN (SELECT date::date,
                               min,
@@ -153,6 +157,11 @@ srv_review_insert = '''
                               normal_max
                        FROM stg_temperature) temperature
             ON DATE(stg_review.date) = DATE(temperature.date)
+            LEFT JOIN (SELECT date::date,
+                              precipitation::float,
+                              precipitation_normal
+                       FROM stg_precipitation) stg_precipitation
+            ON DATE(stg_review.date) = DATE(stg_precipitation.date)
     '''
 
 create_table_srv_tip = '''
@@ -165,11 +174,13 @@ CREATE TABLE IF NOT EXISTS srv_tip (
     min int4, 
     max int4, 
     normal_min int4, 
-    normal_max int4)
+    normal_max int4,
+    precipitation float8,
+    precipitation_normal float8)
 '''
 
 srv_tip_insert = '''
-        INSERT INTO srv_tip (date, user_id, business_id, text, compliment_count, min, max, normal_min, normal_max)
+        INSERT INTO srv_tip (date, user_id, business_id, text, compliment_count, min, max, normal_min, normal_max,precipitation,precipitation_normal)
         SELECT stg_tip.date::date,
                user_id,
                business_id,
@@ -178,7 +189,9 @@ srv_tip_insert = '''
                min,
                max,
                normal_min,
-               normal_max
+               normal_max,
+               precipitation,
+               precipitation_normal
             FROM stg_tip
             LEFT JOIN (SELECT date::date,
                               min,
@@ -187,5 +200,92 @@ srv_tip_insert = '''
                               normal_max
                        FROM stg_temperature) temperature
             ON DATE(stg_tip.date) = DATE(temperature.date)
+            LEFT JOIN (SELECT date::date,
+                              precipitation::float,
+                              precipitation_normal
+                       FROM stg_precipitation) stg_precipitation
+            ON DATE(stg_tip.date) = DATE(stg_precipitation.date)
     '''
 
+
+#Below are aggregate table
+create_table_AggReviewDay = '''
+CREATE TABLE IF NOT EXISTS Agg_ReviewDay (
+    date date, 
+    stars char,
+    count_review int4,
+    min int4,
+    max int4,
+    normal_min int4, 
+    normal_max int4,
+    precipitation float8,
+    precipitation_normal float8)
+'''
+
+AggReviewDay_insert = '''
+        INSERT INTO Agg_ReviewDay(date, stars, count_review, min, max, normal_min, normal_max,precipitation,precipitation_normal)
+        SELECT stg_review.date::date, 
+               stars::char,
+               COUNT(review_id), 
+               min(min), 
+               min(max), 
+               min(normal_min), 
+               min(normal_max),
+               min(precipitation),
+               min(precipitation_normal)
+        FROM stg_review 
+        LEFT JOIN (SELECT date::date,
+                              min,
+                              max,
+                              normal_min,
+                              normal_max
+                       FROM stg_temperature) temperature
+        ON DATE(stg_review.date) = DATE(temperature.date)
+        LEFT JOIN (SELECT date::date,
+                              precipitation::float,
+                              precipitation_normal
+                       FROM stg_precipitation) stg_precipitation
+        ON DATE(stg_review.date) = DATE(stg_precipitation.date)
+        GROUP BY stg_review.date, stg_review.stars::char;
+    '''
+
+
+
+#Below are aggregate table
+create_table_AggTipDay = '''
+CREATE TABLE IF NOT EXISTS Agg_TipDay (
+    date date, 
+    count_tip int4,
+    min int4,
+    max int4,
+    normal_min int4, 
+    normal_max int4,
+    precipitation float8,
+    precipitation_normal float8)
+'''
+
+AggTipDay_insert = '''
+        INSERT INTO Agg_TipDay(date, count_tip, min, max, normal_min, normal_max,precipitation,precipitation_normal)
+        SELECT stg_tip.date::date, 
+               COUNT(user_id), 
+               min(min), 
+               min(max), 
+               min(normal_min), 
+               min(normal_max),
+               min(precipitation),
+               min(precipitation_normal)
+        FROM stg_tip
+        LEFT JOIN (SELECT date::date,
+                              min,
+                              max,
+                              normal_min,
+                              normal_max
+                       FROM stg_temperature) temperature
+        ON DATE(stg_tip.date) = DATE(temperature.date)
+        LEFT JOIN (SELECT date::date,
+                              precipitation::float,
+                              precipitation_normal
+                       FROM stg_precipitation) stg_precipitation
+        ON DATE(stg_tip.date) = DATE(stg_precipitation.date)
+        GROUP BY stg_tip.date;
+    '''

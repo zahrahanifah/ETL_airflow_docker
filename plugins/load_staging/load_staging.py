@@ -22,6 +22,8 @@ class load_to_staging:
     def load_staging_precipitacion(self):
       dateparse = lambda x: datetime.strptime(x, '%Y%m%d')
       data = pd.read_csv(self.path, parse_dates=['date'], date_parser=dateparse)
+      data = data[data['precipitation'].notnull()]
+      data = data.replace({'precipitation': 'T'}, 0.00)
       data.to_sql(self.table_name, self.engine, if_exists='replace')
 
     def load_staging_temperature(self):

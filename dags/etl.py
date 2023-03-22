@@ -73,13 +73,13 @@ load_dim_user = load_to_dim(sql_statements.create_table_dim_user,
 
 
 #define serving task
-load_srv_review = load_to_serving(sql_statements.create_table_srv_review, 
-                                sql_statements.srv_review_insert, 
-                                engine).load_to_serving()
+load_AggReviewDay = load_to_serving(sql_statements.create_table_AggReviewDay, 
+                                 sql_statements.AggReviewDay_insert, 
+                                 engine).load_to_serving()
 
-load_srv_tip = load_to_serving(sql_statements.create_table_srv_tip, 
-                                sql_statements.srv_tip_insert, 
-                                engine).load_to_serving()
+load_AggTipDay = load_to_serving(sql_statements.create_table_AggTipDay, 
+                                 sql_statements.AggTipDay_insert, 
+                                 engine).load_to_serving()
 
 #define dag flow
 with dag:
@@ -98,8 +98,8 @@ with dag:
     load_dim_business_task = PythonOperator(task_id="load_dim_business_task", python_callable=load_dim_business)
     load_dim_user_task = PythonOperator(task_id="run_tables_exists_task", python_callable=load_dim_user)
     
-    load_srv_review_task = PythonOperator(task_id="load_srv_review_task", python_callable=load_srv_review)
-    load_srv_tip_task = PythonOperator(task_id="load_srv_tip_task", python_callable=load_srv_tip)
+    load_AggReviewDay_task = PythonOperator(task_id="load_AggReviewDay_task", python_callable=load_AggReviewDay)
+    load_AggTipDay_task = PythonOperator(task_id="load_AggTipDay_task", python_callable=load_AggTipDay)
 
     #define task dependencies
     load_stg_review_task >> load_fact_review_task
@@ -111,8 +111,8 @@ with dag:
     load_fact_tip_task >> load_dim_business_task
     load_fact_tip_task >> load_dim_user_task
 
-    load_dim_business_task >> load_srv_review_task
-    load_dim_user_task >> load_srv_review_task
-    load_dim_business_task >> load_srv_tip_task
-    load_dim_user_task >> load_srv_tip_task
+    load_dim_business_task >> load_AggReviewDay_task
+    load_dim_user_task >> load_AggReviewDay_task
+    load_dim_business_task >> load_AggTipDay_task
+    load_dim_user_task >> load_AggTipDay_task
 
