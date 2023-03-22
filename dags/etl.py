@@ -8,11 +8,8 @@ from airflow.models import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-from plugins.read_json.read_json import read_json_file
-from plugins.load_staging.load_staging import load_to_staging
-from plugins.load_fact.load_fact import load_to_fact
-from plugins.load_dim.load_dim import load_to_dim
-from plugins.load_serving.load_serving import load_to_serving
+from airflow.operators import (read_json_file, load_to_staging,
+                               load_to_fact, load_to_dim,load_to_serving)
 
 from dotenv import dotenv_values
 from sqlalchemy import create_engine, inspect

@@ -210,7 +210,7 @@ srv_tip_insert = '''
 
 #Below are aggregate table
 create_table_AggReviewDay = '''
-CREATE TABLE IF NOT EXISTS Agg_ReviewDay (
+CREATE TABLE IF NOT EXISTS agg_ReviewDay (
     date date, 
     stars char,
     count_review int4,
@@ -223,32 +223,26 @@ CREATE TABLE IF NOT EXISTS Agg_ReviewDay (
 '''
 
 AggReviewDay_insert = '''
-        INSERT INTO Agg_ReviewDay(date, stars, count_review, min, max, normal_min, normal_max,precipitation,precipitation_normal)
-        SELECT stg_review.date::date, 
-               stars::char,
-               COUNT(review_id), 
-               min(min), 
-               min(max), 
-               min(normal_min), 
-               min(normal_max),
-               min(precipitation),
-               min(precipitation_normal)
-        FROM stg_review 
-        LEFT JOIN (SELECT date::date,
-                              min,
-                              max,
-                              normal_min,
-                              normal_max
-                       FROM stg_temperature) temperature
-        ON DATE(stg_review.date) = DATE(temperature.date)
-        LEFT JOIN (SELECT date::date,
-                              precipitation::float,
-                              precipitation_normal
-                       FROM stg_precipitation) stg_precipitation
-        ON DATE(stg_review.date) = DATE(stg_precipitation.date)
-        GROUP BY stg_review.date, stg_review.stars::char;
+        INSERT INTO agg_ReviewDay(date, stars, count_review, min, max, normal_min, normal_max,precipitation,precipitation_normal)
+        SELECT review.date::date, 
+               review.stars::char,
+               count_review, 
+               min, 
+               max, 
+               normal_min, 
+               normal_max,
+               precipitation::float,
+               precipitation_normal
+        FROM (SELECT fact_review.date::date,
+                     fact_review.stars::char,
+                     COUNT(review_id) AS count_review
+              FROM fact_review 
+              GROUP BY fact_review.date, fact_review.stars::char) AS review
+        LEFT JOIN stg_temperature
+        ON DATE(review.date) = DATE(stg_temperature.date)
+        LEFT JOIN stg_precipitation
+        ON DATE(review.date) = DATE(stg_precipitation.date);
     '''
-
 
 
 #Below are aggregate table
@@ -266,26 +260,20 @@ CREATE TABLE IF NOT EXISTS Agg_TipDay (
 
 AggTipDay_insert = '''
         INSERT INTO Agg_TipDay(date, count_tip, min, max, normal_min, normal_max,precipitation,precipitation_normal)
-        SELECT stg_tip.date::date, 
-               COUNT(user_id), 
-               min(min), 
-               min(max), 
-               min(normal_min), 
-               min(normal_max),
-               min(precipitation),
-               min(precipitation_normal)
-        FROM stg_tip
-        LEFT JOIN (SELECT date::date,
-                              min,
-                              max,
-                              normal_min,
-                              normal_max
-                       FROM stg_temperature) temperature
-        ON DATE(stg_tip.date) = DATE(temperature.date)
-        LEFT JOIN (SELECT date::date,
-                              precipitation::float,
-                              precipitation_normal
-                       FROM stg_precipitation) stg_precipitation
-        ON DATE(stg_tip.date) = DATE(stg_precipitation.date)
-        GROUP BY stg_tip.date;
+        SELECT tip.date::date, 
+               COUNT_tip, 
+               min, 
+               max, 
+               normal_min, 
+               normal_max,
+               precipitation::float,
+               precipitation_normal
+        FROM (SELECT fact_tip.date::date,
+                     COUNT(user_id) AS count_tip
+              FROM fact_tip 
+              GROUP BY fact_tip.date) AS tip
+        LEFT JOIN stg_temperature
+        ON DATE(tip.date) = DATE(stg_temperature.date)
+        LEFT JOIN stg_precipitation
+        ON DATE(tip.date) = DATE(stg_precipitation.date);
     '''
