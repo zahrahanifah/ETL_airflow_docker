@@ -1,4 +1,5 @@
-from plugins.read_json.read_json import read_json_file
+from operators.read_json import read_json_file
+#from airflow.operators import read_json_file
 import pandas as pd
 from datetime import datetime
 

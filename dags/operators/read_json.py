@@ -6,11 +6,25 @@ class read_json_file:
       self.path = path
 
     def read_json_tip(self):
-      data = pd.read_json(self.path, lines=True)
+      data =[]
+      with open(self.path,"r",encoding='utf-8') as f:
+        for line in f:
+          try:
+            data.append(json.loads(f.readline()))
+          except Exception as e:
+            pass
+        data = pd.DataFrame(data)
       return data
     
     def read_json_checkin(self):
-      data = pd.read_json(self.path, lines=True)
+      data =[]
+      with open(self.path,"r",encoding='utf-8') as f:
+        for line in f:
+          try:
+            data.append(json.loads(f.readline()))
+          except Exception as e:
+            pass
+        data = pd.DataFrame(data)
       data['date'] = data['date'].apply(lambda x: x.split(','))
       data = data.explode('date')
       return data
@@ -19,7 +33,10 @@ class read_json_file:
       data =[]
       with open(self.path,"r",encoding='utf-8') as f:
         for line in f:
-          data.append(json.loads(f.readline()))
+          try:
+            data.append(json.loads(f.readline()))
+          except Exception as e:
+            pass
         data = pd.DataFrame(data)
       return data
     
@@ -27,7 +44,10 @@ class read_json_file:
       data =[]
       with open(self.path,"r",encoding='utf-8') as f:
         for line in f:
-          data.append(json.loads(f.readline()))
+          try:
+            data.append(json.loads(f.readline()))
+          except Exception as e:
+            pass
         data = pd.DataFrame(data)
         data['attributes']=str(data['attributes'])
         data['hours']=str(data['hours'])
