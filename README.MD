@@ -12,8 +12,8 @@
     2. From ODS layer to DWH layer (Fact and Dim)
     3. From DWH layer to Serving layer
         
-* **Plugins** :
-   For this project, I have build five different plugins that will stage the data and transform the data
+* **Operators** :
+   For this project, I have build five different operators that will stage the data and transform the data
    * **read_json:** expected to be able to load any JSON file to python dataframe
    * **load_staging:** expected to be able to load python dataframe to staging table in Postgresql
    * **load_fact:** expected to be able to load staging table to fact table in Postgresql
@@ -21,6 +21,6 @@
    * **load_serving:** expected to be able to load fact table and dim table to serving table in Postgresql
 
 * **How to Run** : Open the terminal, type as below
-    1. docker-compose -f docker-compose-airflow.yaml up -d
+    1.  docker build . --tag extending_airflow:latest
 
 
